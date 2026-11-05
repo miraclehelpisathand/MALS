@@ -58,7 +58,7 @@ export async function loadLearning(client, enableCertificates=certificatesEnable
     readAll(client, 'course_assignments', enableCertificates?'id,course_id,user_id,target_date,created_at,refresher_of_certificate_id,access_assignment_id':'id,course_id,user_id,target_date,created_at', ['course_id','user_id','id']),
     readAll(client, 'group_course_requirements', 'group_id,course_id', ['group_id','course_id']),
     readCatalog(client),
-    readAll(client, 'course_block_progress', enableCertificates?'user_id,block_id,marked_at,assignment_id':'user_id,block_id,marked_at', ['user_id','block_id']),
+    readAll(client, 'course_block_progress', enableCertificates?'user_id,block_id,marked_at,assignment_id':'user_id,block_id,marked_at', enableCertificates?['user_id','block_id','assignment_id']:['user_id','block_id']),
     readAll(client, 'assessment_attempts', 'id,block_id,user_id,attempt_number,kind,status,answers,feedback,score,submitted_at,reviewer_id,reviewed_at,review_details,review_comment'+(enableCertificates?',assignment_id':''), ['submitted_at','id']),
     readReviewers(client),
     readCompletion(client),
