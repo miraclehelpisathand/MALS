@@ -142,8 +142,18 @@ create function public.get_certificate_template(target_template uuid, certificat
 declare result jsonb;
 begin
  if auth.uid() is null then raise exception 'Not authorised' using errcode='42501';end if;
- if not (private.can_author() and exists(select 1 from public.certificate_templates where id=target_template)) and not exists(select 1 from public.certificates c where c.id=certificate_id and c.template_id=target_template and (c.user_id=auth.uid() or private.is_admin() or private.can_view_profile(c.user_id))) then raise exception 'Not authorised' using errcode='42501';end if;
- select jsonb_build_object('png_base64',encode(artwork_png,'base64'),'width',page_width,'height',page_height) into result from public.certificate_templates where id=target_template;
+ if certificate_id is null then
+  if not private.can_author() then raise exception 'Not authorised' using errcode='42501';end if;
+  select jsonb_build_object('png_base64',encode(t.artwork_png,'base64'),'width',t.page_width,'height',t.page_height)
+   into result from public.certificate_templates t where t.id=target_template;
+ else
+  -- Always check the specific certificate, even for authors, and return its
+  -- current status with the artwork in the same statement snapshot.
+  select jsonb_build_object('png_base64',encode(t.artwork_png,'base64'),'width',t.page_width,'height',t.page_height,'certificate_status',c.status)
+   into result from public.certificates c join public.certificate_templates t on t.id=c.template_id
+   where c.id=certificate_id and t.id=target_template and (c.user_id=auth.uid() or private.is_admin() or private.can_view_profile(c.user_id));
+ end if;
+ if result is null then raise exception 'Not authorised' using errcode='42501';end if;
  return result;
 end; $$;
 
