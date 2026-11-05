@@ -1,0 +1,32 @@
+name: Refresher scheduler monitor
+on:
+  schedule:
+    # 30 minutes after the hourly scheduler. GitHub schedules can be delayed.
+    - cron: '47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: refresher-monitor
+  cancel-in-progress: false
+jobs:
+  check:
+    # Deliberately opt-in after migrations, monitor account, secrets, alert
+    # subscriptions and cron are configured and verified by an operator.
+    if: ${{ vars.MA_CERTIFICATE_MONITOR_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out monitor code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check scheduler health
+        run: node scripts/check-refresher-health.mjs
+        env:
+          SUPABASE_URL: ${{ vars.MA_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.MA_SUPABASE_PUBLISHABLE_KEY }}
+          MONITOR_USER_ID: ${{ vars.MA_MONITOR_USER_ID }}
+          MONITOR_EMAIL: ${{ secrets.MA_MONITOR_EMAIL }}
+          MONITOR_PASSWORD: ${{ secrets.MA_MONITOR_PASSWORD }}
+          MONITOR_HEARTBEAT_URL: ${{ secrets.MA_HEARTBEAT_URL }}
