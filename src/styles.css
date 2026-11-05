@@ -21,7 +21,7 @@
 .completion-status{margin:8px 0}.completion-status p{font-size:11px;color:#718a7b;margin:6px 0}.completion-status progress{width:100%;height:7px;accent-color:#4d9768}.completion-badges{display:flex;gap:5px;flex-wrap:wrap}.completion-badge{display:inline-block;border-radius:20px;background:#edf4ef;color:#63816d;padding:5px 8px;font-size:10px;font-weight:700}.completion-badge.completed{background:#e1f4e6;color:#377c50}.completion-badge.awaiting_review{background:#fff3da;color:#956a24}.completion-badge.overdue,.completion-badge.needs_rule{background:#fcece8;color:#a15f4c}.completion-badge.inactive{background:#f2f4f2;color:#849189}.completion-history{margin-top:12px;font-size:11px;color:#718a7b}.completion-history summary{cursor:pointer;font-weight:700}.completion-history li{margin:5px 0}.dashboard-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.dashboard-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:12px 0 24px}.dashboard-metrics .card{padding:16px;display:flex;flex-direction:column;gap:5px}.dashboard-metrics strong{font-size:24px;color:#4a7f5d}.dashboard-metrics span,.dashboard-row small{font-size:11px;color:#82998a}.dashboard-row{padding:15px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:16px}.dashboard-row>div{min-width:0}.dashboard-row .completion-status{min-width:min(230px,40%)}.dashboard-person{font-size:13px;font-weight:700;color:#4b8060;text-align:left;text-decoration:underline}.dashboard-row p{font-size:12px;color:#6f8777;margin:5px 0}@media(max-width:700px){.dashboard-filters{grid-template-columns:1fr}.dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-row{align-items:stretch;flex-direction:column}.dashboard-row .completion-status{min-width:0}}
 
 /* Group hierarchy uses native nested lists and separate disclosure buttons. */
-.group-tree-scroll{overflow:auto;max-height:min(65vh,720px)}
+.group-tree-scroll{max-height:none;overflow-x:auto;overflow-y:hidden}
 .group-tree,.group-tree ul{list-style:none;padding:0;margin:0}
 .group-tree ul{margin-left:17px;padding-left:6px;border-left:1px solid #d9e7dc}
 .group-tree-row{display:flex;align-items:center;min-width:190px}
@@ -33,6 +33,6 @@
 .group-tree-item{min-width:0;flex:1;padding:8px 6px;gap:7px}
 .group-tree-item small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .group-tree-item .group-choice-icon{width:31px;height:31px;flex:none}
-@media(max-width:700px){.group-tree-scroll{max-height:280px}}
+@media(max-width:700px){.group-tree-scroll{max-height:none}}
 @media(prefers-reduced-motion:reduce){.group-tree-toggle svg{transition:none}}
 .group-tree-item strong,.group-tree-item small{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
