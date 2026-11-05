@@ -39,16 +39,38 @@ begin
 end; $$;
 revoke all on function private.copy_qualification_certificate(uuid,uuid,date,uuid) from public,anon,authenticated;
 
+-- A historical refresher must not reissue a later qualification, or bypass
+-- an original course reopening. Events use one database-wide sequence.
+create function private.refresher_reissue_is_current(target_assignment uuid) returns boolean language sql stable security definer set search_path='' as $$
+ select exists(
+  select 1 from public.course_assignments a
+  join public.course_completion_state anchor on anchor.assignment_id=a.access_assignment_id and anchor.completed_at is not null
+  join lateral (
+   select c.assignment_id,c.status,ev.event_sequence
+   from public.certificates c join public.course_completion_events ev on ev.id=c.completion_event_id
+   where c.qualification_assignment_id=a.access_assignment_id
+   order by ev.event_sequence desc limit 1
+  ) latest on true
+  where a.id=target_assignment and a.access_assignment_id is not null
+    and latest.assignment_id=a.id and latest.status='revoked'
+    and not exists(select 1 from public.course_completion_events reopen
+     where reopen.assignment_id=a.access_assignment_id and reopen.event_type='reopened' and reopen.event_sequence>latest.event_sequence)
+ );
+$$;
+revoke all on function private.refresher_reissue_is_current(uuid) from public,anon,authenticated;
+
 create or replace function private.certificate_completion_trigger() returns trigger language plpgsql security definer set search_path='' as $$
 declare a public.course_assignments%rowtype; source public.certificates%rowtype;
 begin
  select * into a from public.course_assignments where id=new.assignment_id;
  if new.event_type='reopened' then
   update public.certificates set status='revoked',revoked_at=new.occurred_at,revocation_reason='Course reopened' where status='active' and (assignment_id=a.id or (a.access_assignment_id is null and qualification_assignment_id=a.id));
-  update public.certificate_reissue_requests set status='cancelled' where status='pending' and (assignment_id=a.id or assignment_id in (select id from public.course_assignments where refresher_of_certificate_id in (select id from public.certificates where status='revoked')));
+  update public.certificate_reissue_requests set status='cancelled' where status='pending' and (assignment_id=a.id or (a.access_assignment_id is null and assignment_id in (select id from public.course_assignments where access_assignment_id=a.id)));
  elsif new.source='activity' then
   if exists(select 1 from public.certificates where status='revoked' and (assignment_id=a.id or (a.access_assignment_id is null and qualification_assignment_id=a.id))) then
-   insert into public.certificate_reissue_requests(completion_event_id,assignment_id,user_id) values(new.id,a.id,a.user_id) on conflict do nothing;
+   if a.access_assignment_id is null or private.refresher_reissue_is_current(a.id) then
+    insert into public.certificate_reissue_requests(completion_event_id,assignment_id,user_id) values(new.id,a.id,a.user_id) on conflict do nothing;
+   end if;
   elsif a.refresher_of_certificate_id is not null then
    select * into source from public.certificates where id=a.refresher_of_certificate_id for update;
    -- An old refresher cannot extend a qualification revoked while it was underway.
@@ -75,6 +97,7 @@ begin
  select c.id into prior from public.certificates c join public.course_completion_events ev on ev.id=c.completion_event_id
  where c.status='revoked' and (c.assignment_id=a.id or (a.access_assignment_id is null and c.qualification_assignment_id=a.id)) order by ev.event_sequence desc limit 1 for update of c;
  if prior is null then raise exception 'Previous certificate not found' using errcode='22023';end if;
+ if a.access_assignment_id is not null and not private.refresher_reissue_is_current(a.id) then raise exception 'Refresher reissue is no longer eligible' using errcode='22023';end if;
  if exists(select 1 from public.certificates c join public.certificates old on old.id=prior where c.qualification_assignment_id=old.qualification_assignment_id and c.status='active') then raise exception 'This qualification already has an active certificate' using errcode='22023';end if;
  perform private.copy_qualification_certificate(prior,target_event,(e.occurred_at at time zone 'Pacific/Auckland')::date,auth.uid());
  update public.certificate_reissue_requests set status='approved',reviewed_by=auth.uid(),reviewed_at=now() where completion_event_id=target_event;
