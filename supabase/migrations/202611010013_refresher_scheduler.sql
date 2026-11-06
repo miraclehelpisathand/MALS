@@ -108,12 +108,12 @@ end; $$;
 create table private.refresher_job_runs (
  id bigint generated always as identity primary key,
  started_at timestamptz not null,finished_at timestamptz not null,
- eligible_count integer not null,created_count integer not null,error_count integer not null,
+ eligible_count integer not null,created_count integer not null,error_count integer not null,backlog_count integer not null,
  error_codes text[] not null default '{}'
 );
 revoke all on private.refresher_job_runs from public,anon,authenticated;
 create function private.run_refresher_scheduler(as_of date default (now() at time zone 'Pacific/Auckland')::date) returns integer language plpgsql security definer set search_path='' as $$
-declare candidate record; source public.certificates%rowtype; target uuid; created_count integer:=0;eligible_count integer:=0;error_count integer:=0;errors text[]:='{}';started timestamptz:=clock_timestamp();
+declare candidate record; source public.certificates%rowtype; target uuid; created_count integer:=0;eligible_count integer:=0;error_count integer:=0;remaining_count integer:=0;errors text[]:='{}';started timestamptz:=clock_timestamp();
 begin
  if as_of is null then raise exception 'Date required' using errcode='22023';end if;
  for candidate in select c.id,c.qualification_assignment_id from public.certificates c where c.status='active' and c.expiry_date is not null and c.refresher_family_id is not null and as_of>=c.expiry_date-c.lead_days and not exists(select 1 from public.course_assignments a where a.refresher_of_certificate_id=c.id) order by c.qualification_assignment_id,c.id loop
@@ -132,14 +132,21 @@ begin
    error_count:=error_count+1;errors:=array_append(errors,sqlstate);
   end;
  end loop;
- insert into private.refresher_job_runs(started_at,finished_at,eligible_count,created_count,error_count,error_codes) values(started,clock_timestamp(),eligible_count,created_count,error_count,errors);
+ -- SKIP LOCKED avoids blocking writers but can defer work without an error.
+ -- Report eligible assignments still missing so the monitor fails closed until
+ -- a later run catches up. Archived/inaccessible qualifications are excluded.
+ select count(*) into remaining_count from public.certificates c
+ where c.status='active' and c.expiry_date is not null and c.refresher_family_id is not null
+  and as_of>=c.expiry_date-c.lead_days and private.assignment_is_active(c.qualification_assignment_id)
+  and not exists(select 1 from public.course_assignments a where a.refresher_of_certificate_id=c.id);
+ insert into private.refresher_job_runs(started_at,finished_at,eligible_count,created_count,error_count,backlog_count,error_codes) values(started,clock_timestamp(),eligible_count,created_count,error_count,remaining_count,errors);
  return created_count;
 end; $$;
 revoke all on function private.run_refresher_scheduler(date) from public,anon,authenticated;
-create function public.refresher_scheduler_health() returns table(started_at timestamptz,finished_at timestamptz,eligible_count integer,created_count integer,error_count integer,error_codes text[]) language plpgsql stable security definer set search_path='' as $$
+create function public.refresher_scheduler_health() returns table(started_at timestamptz,finished_at timestamptz,eligible_count integer,created_count integer,error_count integer,backlog_count integer,error_codes text[]) language plpgsql stable security definer set search_path='' as $$
 begin
  if not private.is_admin() then raise exception 'Administrator required' using errcode='42501';end if;
- return query select r.started_at,r.finished_at,r.eligible_count,r.created_count,r.error_count,r.error_codes from private.refresher_job_runs r order by r.id desc limit 30;
+ return query select r.started_at,r.finished_at,r.eligible_count,r.created_count,r.error_count,r.backlog_count,r.error_codes from private.refresher_job_runs r order by r.id desc limit 30;
 end; $$;
 revoke all on function public.refresher_scheduler_health() from public,anon;
 grant execute on function public.refresher_scheduler_health() to authenticated;
@@ -154,7 +161,7 @@ create table private.refresher_monitor_users (
 revoke all on private.refresher_monitor_users from public,anon,authenticated;
 create function public.refresher_monitor_status() returns jsonb
 language plpgsql stable security definer set search_path='' as $$
-declare last_finished timestamptz; recent_errors bigint; cron_failures bigint:=0; job_active boolean:=false; logging_enabled boolean:=coalesce(pg_catalog.current_setting('cron.log_run',true)='on',false);
+declare last_finished timestamptz; remaining_count integer; recent_errors bigint; cron_failures bigint:=0; job_active boolean:=false; logging_enabled boolean:=coalesce(pg_catalog.current_setting('cron.log_run',true)='on',false);
 begin
  if not exists(select 1 from private.refresher_monitor_users where user_id=auth.uid())
     or exists(select 1 from public.user_roles where user_id=auth.uid())
@@ -163,8 +170,9 @@ begin
     or exists(select 1 from public.course_assignments where user_id=auth.uid()) then
   raise exception 'Not authorised' using errcode='42501';
  end if;
- select max(finished_at), coalesce(sum(error_count) filter (where finished_at>=statement_timestamp()-interval '26 hours'),0)
- into last_finished,recent_errors from private.refresher_job_runs;
+ select r.finished_at,r.backlog_count into last_finished,remaining_count from private.refresher_job_runs r order by r.id desc limit 1;
+ select coalesce(sum(error_count) filter (where finished_at>=statement_timestamp()-interval '26 hours'),0)
+ into recent_errors from private.refresher_job_runs;
  -- Dynamic SQL allows installation before pg_cron; absent job/extension fails
  -- closed. Cron records are checked as well as the application heartbeat.
  if pg_catalog.to_regclass('cron.job') is not null and pg_catalog.to_regclass('cron.job_run_details') is not null then
@@ -176,8 +184,8 @@ begin
  end if;
  return pg_catalog.jsonb_build_object(
   'healthy',job_active and logging_enabled and last_finished is not null and last_finished>=statement_timestamp()-interval '3 hours'
-    and last_finished<=statement_timestamp()+interval '5 minutes' and recent_errors=0 and cron_failures=0,
-  'job_active',job_active,'logging_enabled',logging_enabled,'last_finished',last_finished,'recent_errors',recent_errors,'cron_failures',cron_failures
+    and last_finished<=statement_timestamp()+interval '5 minutes' and remaining_count=0 and recent_errors=0 and cron_failures=0,
+  'job_active',job_active,'logging_enabled',logging_enabled,'last_finished',last_finished,'backlog_count',remaining_count,'recent_errors',recent_errors,'cron_failures',cron_failures
  );
 end; $$;
 revoke all on function public.refresher_monitor_status() from public,anon;

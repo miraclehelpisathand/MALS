@@ -27,8 +27,9 @@ function SchedulerHealth({client}) {
  if(error)return <p className="auth-error" role="alert">{error}</p>;
  if(!runs)return <p className="hint">Checking scheduler…</p>;
  const last=runs[0],stale=!last||!Number.isFinite(Date.parse(last.finished_at))||Date.now()-new Date(last.finished_at).getTime()>3*60*60*1000||new Date(last.finished_at).getTime()-Date.now()>5*60*1000;
+ const backlog=last&&(!Number.isInteger(last.backlog_count)||last.backlog_count>0);
  const recentErrors=runs.some(run=>run.error_count>0&&Date.now()-new Date(run.finished_at).getTime()<=26*60*60*1000);
- return <div className="card certificate-verify"><strong>Refresher scheduler</strong><p>{!last?'No run has been recorded.':`Last run: ${new Date(last.finished_at).toLocaleString('en-NZ',{timeZone:'Pacific/Auckland'})} · ${last.created_count} assignments created · ${last.error_count} errors.`}</p>{(stale||recentErrors)&&<p className="auth-error" role="alert">{stale?'The scheduler heartbeat is missing or overdue.':'A run reported errors in the last 26 hours.'} An operator must investigate.</p>}<small>External monitoring is still required; this screen does not send alerts.</small></div>;
+ return <div className="card certificate-verify"><strong>Refresher scheduler</strong><p>{!last?'No run has been recorded.':`Last run: ${new Date(last.finished_at).toLocaleString('en-NZ',{timeZone:'Pacific/Auckland'})} · ${last.created_count} assignments created · ${last.error_count} errors.`}</p>{(stale||backlog||recentErrors)&&<p className="auth-error" role="alert">{stale?'The scheduler heartbeat is missing or overdue.':backlog?'One or more refresher assignments may be delayed or backlog status is unavailable.':'A run reported errors in the last 26 hours.'} An operator must investigate.</p>}<small>External monitoring is still required; this screen does not send alerts.</small></div>;
 }
 export function Certificates({client,session,roles,learning,directory,refresh}) {
  const [error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);

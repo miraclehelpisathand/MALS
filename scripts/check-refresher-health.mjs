@@ -36,7 +36,7 @@ export async function checkRefresherHealth(env = process.env, request = fetch) {
   const status = await post('/rest/v1/rpc/refresher_monitor_status', {
     apikey: key, Authorization: `Bearer ${auth.access_token}`, 'Content-Type': 'application/json',
   }, {});
-  if (!status || status.healthy !== true || status.job_active !== true || status.logging_enabled !== true || typeof status.last_finished !== 'string' || status.recent_errors !== 0 || status.cron_failures !== 0) {
+  if (!status || status.healthy !== true || status.job_active !== true || status.logging_enabled !== true || typeof status.last_finished !== 'string' || status.backlog_count !== 0 || status.recent_errors !== 0 || status.cron_failures !== 0) {
     throw new Error('Refresher scheduler is unhealthy; inspect the operator runbook.');
   }
   // The independent dead-man's-switch receives a ping ONLY on success. If
