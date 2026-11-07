@@ -36,3 +36,6 @@
 @media(max-width:700px){.group-tree-scroll{max-height:none}}
 @media(prefers-reduced-motion:reduce){.group-tree-toggle svg{transition:none}}
 .group-tree-item strong,.group-tree-item small{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+
+/* Assessment review filters use the same responsive controls as the overview. */
+.review-filters{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:8px}@media(max-width:700px){.review-filters{grid-template-columns:1fr}}

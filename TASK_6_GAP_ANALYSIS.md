@@ -21,7 +21,7 @@ The demo in `src/App.jsx` is separate browser-local sample data; its sample vide
 | Completion and progress | `src/Completion.jsx`, `src/progress.js`, migrations 009–010, `TASK_4_VALIDATION.md` | Development implementation for required-block completion, history, overdue/late and scoped overview filters, with Pacific/Auckland end-of-date rules. Real signed-in security and phone checks remain. |
 | Certificates and refreshers | `src/CertificateEditor.jsx`, `src/Certificates.jsx`, migrations 011–014, `TASK_5_IN_PROGRESS.md` | **Local prototype only**, disabled and not deployed. Automatic refreshers and independent monitoring are not active. |
 
-The latest recorded local full suite passed 155 tests and the build passed with a large-chunk warning. Database emulation, simulated identities and browser mocks do not replace signed-in Supabase HTTP tests, independent security review or physical-device testing. The latest development preflight is recorded in `TASK_5_IN_PROGRESS.md`; it is not a live guarantee.
+The latest recorded local full suite passed 156 tests and the build passed with a large-chunk warning. Database emulation, simulated identities and browser mocks do not replace signed-in Supabase HTTP tests, independent security review or physical-device testing. The latest development preflight is recorded in `TASK_5_IN_PROGRESS.md`; it is not a live guarantee.
 
 ## First-release gaps and suggested work packages
 
@@ -39,7 +39,7 @@ Work required:
 
 ### 7. Reporting and CSV — missing/partial
 
-The connected overview has active-assignment counts and group, course and status filters (`src/Completion.jsx`). CSV export is not implemented; the assessment review queue exists but does not provide the course/status filters described for the trainer dashboard. Confirm exactly which roles and fields may be exported, and whether inactive/historical records and certificates should be included. Implement and test export against server-authorised scope, pagination and spreadsheet formula injection; an unrelated leader must not receive another group's data. Certificate reporting must not assume undeployed Task 5 tables.
+The connected overview has active-assignment counts and group, course and status filters (`src/Completion.jsx`). CSV export is not implemented. The assessment review queue now has course-version and status filters over the records already authorised by the database; actual signed-in and physical-device checks remain. Confirm exactly which roles and fields may be exported, and whether inactive/historical records and certificates should be included. Implement and test export against server-authorised scope, pagination and spreadsheet formula injection; an unrelated leader must not receive another group's data. Certificate reporting must not assume undeployed Task 5 tables.
 
 ### 8. Course content and authoring improvements — missing/decision
 
@@ -72,3 +72,7 @@ Automatic reminder emails, learning paths/prerequisites, bulk import, SSO, advan
 ## Recommended next step
 
 Treat **work package 6: secure learning materials** as the proposed next feature because the first release needs document and video content and the connected LMS currently has only text and assessments. Start with a provider/file-type decision and a security design; much of the design and local work can proceed without enabling Task 5 or changing MA-LS. A real integration, database deployment and end-to-end acceptance require the dependencies above. If the owner prefers a smaller independent task, reporting/CSV can be scoped first, with access rules agreed before implementation.
+
+## Work started outside Task 6
+
+The trainer assessment review queue now offers course-version and status filters, a matching-record count and a clear empty result. The filters narrow existing database-authorised rows and do not change who may view or review an assessment. Local UI coverage includes combined filters, distinct versions, exclusion of the current user and removal of stale course selections after refresh. Task 6 and the deferred Task 5 backup/deployment remain on hold.
