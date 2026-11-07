@@ -1,0 +1,730 @@
+/* Temporary blue palette. Remove this stylesheet import to restore the original green theme. */
+:root {
+  color: #222b35;
+  background: #f7f8f9;
+}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible {
+  outline: 3px solid #7398be;
+}
+h1 {
+  color: #202b36;
+}
+h2 {
+  color: #26303a;
+}
+.sidebar {
+  border-right: 1px solid #e9ecee;
+}
+.brand-mark {
+  background: #31465c;
+}
+.brand-text strong {
+  color: #24303d;
+}
+.brand-text strong span {
+  color: #7f9cba;
+}
+.brand-text small {
+  color: #8a939b;
+}
+.workspace-label {
+  color: #a0a7ae;
+}
+.nav-item {
+  color: #747b82;
+}
+.nav-item:hover {
+  background: #f5f7f8;
+  color: #36485b;
+}
+.nav-item.active {
+  background: #eaeff3;
+  color: #28415b;
+}
+.nav-count {
+  background: #d9e2ea;
+  color: #37526d;
+}
+.side-separator {
+  background: #edeff1;
+}
+.help-card {
+  background: #eff3f6;
+}
+.help-icon {
+  background: #dbe3ec;
+  color: #536c86;
+}
+.help-card p {
+  color: #808991;
+}
+.help-card button,.text-link,.card-footer-link {
+  color: #395673;
+}
+.side-profile {
+  border-top: 1px solid #edeff1;
+}
+.side-profile small {
+  color: #9aa1a7;
+}
+.side-profile>svg {
+  color: #a2a8ae;
+}
+.avatar {
+  color: #556676;
+  background: #e2e9ef;
+}
+.avatar.sage {
+  background: #dce4ec;
+  color: #546677;
+}
+.topbar {
+  border-bottom: 1px solid #e9ecee;
+}
+.top-left {
+  color: #656e77;
+}
+.top-left strong {
+  color: #46505a;
+}
+.breadcrumb-muted,.crumb-chevron {
+  color: #a5abb1;
+}
+.top-right {
+  color: #707981;
+}
+.top-divider {
+  background: #e9ecee;
+}
+.demo-pill {
+  color: #717c87;
+  background: #f0f3f5;
+  border: 1px solid #e7ebee;
+}
+.demo-pill span,.eyebrow-dot,.status-indicator {
+  background: #809ebc;
+}
+.icon-button {
+  color: #9199a0;
+}
+.icon-button:hover {
+  background: #f0f3f5;
+  color: #31485f;
+}
+.eyebrow,.section-kicker {
+  color: #8e98a1;
+}
+.wave {
+  color: #a9bccf;
+}
+.subtitle {
+  color: #8a929a;
+}
+.button.primary {
+  background: #31485f;
+  box-shadow: 0 3px 7px #31485f12;
+}
+.button.primary:hover {
+  background: #263a4e;
+}
+.button.secondary {
+  border: 1px solid #e1e5e9;
+  color: #525d68;
+}
+.button.secondary:hover {
+  background: #f7f9fa;
+}
+.stat-card,.card,.library-card {
+  border: 1px solid #e9ecef;
+  box-shadow: 0 3px 12px rgba(51,63,76,.025);
+}
+.stat-top {
+  color: #737d87;
+}
+.stat-icon,.heading-icon,.setting-icon {
+  color: #617b95;
+  background: #e7edf3;
+}
+.stat-value {
+  color: #29333e;
+}
+.stat-foot {
+  color: #a4abb1;
+}
+.stat-foot button {
+  color: #7b8895;
+}
+.card-heading p,.section-title-row p {
+  color: #9aa2a9;
+}
+.heading-icon {
+  background: #f2f4f7;
+  color: #8091a3;
+}
+.course-row {
+  border-bottom: 1px solid #f0f2f3;
+}
+.course-row:hover .course-row-title strong {
+  color: #496581;
+}
+.course-icon {
+  background: #e9eff4;
+  color: #5c7c9d;
+}
+.course-row-title small,.due-detail small {
+  color: #9ba3ab;
+}
+.row-progress small {
+  color: #a4abb1;
+}
+.row-progress b {
+  color: #52606e;
+}
+.progress {
+  background: #ebeef1;
+}
+.progress span {
+  background: #87a1bb;
+}
+.row-arrow {
+  color: #c4cad0;
+}
+.due-row {
+  border-bottom: 1px solid #f0f2f3;
+}
+.due-date,.due-late {
+  color: #a3a8ad;
+}
+.due-progress {
+  color: #798795;
+}
+.group-summary-icon {
+  background: #ecf1f5;
+  color: #738aa1;
+}
+.group-summary p,.review-summary p {
+  color: #9ca3aa;
+}
+.group-decoration small {
+  color: #a2aab1;
+}
+.review-art {
+  background: #eff3f6;
+  color: #95a5b5;
+}
+.review-art span {
+  background: #d8e1ea;
+  color: #627a92;
+}
+.footer {
+  color: #bdc3c8;
+}
+.footer span span {
+  color: #a1b4c7;
+}
+.search {
+  border: 1px solid #e7ebee;
+  color: #a3aab1;
+}
+.search input {
+  color: #35404b;
+}
+.search input::placeholder {
+  color: #abb2b9;
+}
+.toolbar-count,.subtle-count {
+  color: #a0a8af;
+}
+.library-card:hover {
+  border-color: #c7d3de;
+}
+.badge {
+  background: #f1f3f4;
+  color: #848c94;
+}
+.badge.green {
+  background: #edf2f6;
+  color: #6c839b;
+}
+.course-category {
+  color: #9da5ac;
+}
+.library-card p {
+  color: #9aa1a8;
+}
+.library-meta {
+  color: #939ba3;
+}
+.library-bottom {
+  border-top: 1px solid #eff1f3;
+  color: #a3aab1;
+}
+.library-bottom span:last-child {
+  color: #546a81;
+}
+.back-link {
+  color: #8b949d;
+}
+.detail-title p {
+  color: #929aa2;
+}
+.detail-category {
+  color: #9ba3aa;
+}
+.module-card {
+  border: 1px solid #e9ecef;
+}
+.module-number {
+  background: #eef2f5;
+  color: #7f90a0;
+}
+.module-head small,.block-row small {
+  color: #a3aab0;
+}
+.small-action {
+  color: #546c84;
+}
+.block-row {
+  border-top: 1px solid #f1f3f4;
+}
+.block-icon {
+  color: #929da7;
+}
+.detail-line,.setting-line {
+  border-bottom: 1px solid #f1f3f4;
+  color: #9ba3aa;
+}
+.detail-line strong,.setting-line strong {
+  color: #5f6a75;
+}
+.hint {
+  color: #9aa3ab;
+}
+.note-box {
+  background: #eef2f6;
+  color: #788b9e;
+}
+.note-box strong {
+  color: #5e7285;
+}
+.list-heading span {
+  color: #9aa3ac;
+}
+.group-choice {
+  color: #9099a1;
+}
+.group-choice.selected {
+  background: #eff3f6;
+  color: #57697c;
+}
+.group-choice strong {
+  color: #525f6d;
+}
+.group-choice small {
+  color: #a1a8af;
+}
+.group-choice-icon {
+  background: #e2e9ef;
+}
+.people-head p {
+  color: #9ba3aa;
+}
+.group-leader {
+  color: #a0a7ad;
+}
+.leader-chip {
+  background: #f3f5f7;
+  color: #707d8a;
+}
+.group-metrics {
+  border-top: 1px solid #f0f2f3;
+  border-bottom: 1px solid #f0f2f3;
+}
+.group-metrics div {
+  border-right: 1px solid #edeff1;
+}
+.group-metrics span {
+  color: #a1a9b0;
+}
+.table-heading span {
+  color: #a0a7ae;
+}
+th {
+  color: #aab1b7;
+  background: #fafbfc;
+}
+td {
+  border-top: 1px solid #f2f3f5;
+  color: #8a939c;
+}
+.table-person strong {
+  color: #45515d;
+}
+.table-person small {
+  color: #a4abb1;
+}
+.table-progress b {
+  color: #74828f;
+}
+.review-stats {
+  color: #858f99;
+}
+.assessment-heading p {
+  color: #9aa2a9;
+}
+.assessment-row {
+  border-top: 1px solid #f0f2f4;
+}
+.assessment-name small {
+  color: #9ca4ac;
+}
+.assessment-date small {
+  color: #a9b0b7;
+}
+.assessment-date strong {
+  color: #717c88;
+}
+.setting-card>p {
+  color: #949da5;
+}
+.empty {
+  color: #8c969f;
+}
+.empty-icon {
+  background: #eff3f6;
+  color: #8999aa;
+}
+.empty strong {
+  color: #53606e;
+}
+.toast {
+  background: #31485f;
+  box-shadow: 0 8px 24px #25354522;
+}
+.modal-backdrop {
+  background: rgba(32,42,52,.36);
+}
+.modal {
+  box-shadow: 0 20px 70px #18263527;
+}
+.modal-head {
+  border-bottom: 1px solid #eef0f2;
+}
+.modal-head p {
+  color: #99a2aa;
+}
+.modal-text {
+  color: #838d97;
+}
+.field>span {
+  color: #58636e;
+}
+.field em {
+  color: #a4abb1;
+}
+.field input,.field textarea,.field select {
+  border: 1px solid #e3e7eb;
+  color: #404d5a;
+}
+.field input::placeholder,.field textarea::placeholder {
+  color: #b1b8be;
+}
+.info-callout {
+  background: #eef3f7;
+  color: #6c839a;
+}
+.info-callout p {
+  color: #6f7d8b;
+}
+.review-person {
+  background: #f7f9fa;
+}
+.review-person small {
+  color: #9ba4ad;
+}
+.form-caption {
+  color: #7a848e;
+}
+.checklist label {
+  border-bottom: 1px solid #f1f3f4;
+  color: #606a75;
+}
+.checklist input {
+  accent-color: #4c6783;
+}
+@media (max-width:850px) {
+  .sidebar {
+    box-shadow: 8px 0 35px #202e3c16;
+  }
+  .mobile-scrim {
+    background: #1f293466;
+  }
+}
+.auth-page {
+  background: #f7f8f9;
+}
+.auth-card {
+  border: 1px solid #e9ecef;
+  box-shadow: 0 10px 45px #232f3c0a;
+}
+.auth-symbol {
+  background: #e9eff4;
+  color: #617b95;
+}
+.auth-intro {
+  color: #87919b;
+}
+.auth-text-button {
+  color: #395673;
+}
+.auth-footnote {
+  color: #a1a9b0;
+}
+.auth-success {
+  background: #eff3f7;
+  color: #546b82;
+}
+.auth-alert {
+  background: #f3f5f7;
+  color: #727e8a;
+}
+.auth-panel {
+  background: #f4f6f8;
+  color: #647281;
+}
+.connected-shell {
+  background: #f7f8f9;
+}
+.connected-header {
+  border-bottom: 1px solid #e9ecee;
+}
+.connected-title-divider {
+  background: #e8ebee;
+}
+.connected-header-label,.connected-email {
+  color: #858f98;
+}
+.connected-warning {
+  background: #eef2f6;
+  color: #627486;
+  border: 1px solid #e2e9ef;
+}
+.connected-tabs {
+  border-bottom: 1px solid #e6eaee;
+}
+.connected-tabs button {
+  color: #939ca4;
+}
+.connected-tabs button.selected {
+  color: #3b5672;
+  border-color: #5d7b99;
+}
+.connected-card-heading p,.connected-detail-head p,.connected-section-header p {
+  color: #969fa7;
+}
+.connected-group-item {
+  color: #9aa3ad;
+}
+.connected-group-item:hover,.connected-group-item.selected {
+  background: #eff3f6;
+}
+.connected-group-item strong,.connected-member strong,.membership-row strong {
+  color: #4c5a68;
+}
+.connected-group-item small,.connected-member small,.membership-row small {
+  color: #9ca3ab;
+}
+.connected-empty {
+  color: #929ba3;
+}
+.connected-empty strong {
+  color: #556371;
+}
+.connected-loading {
+  color: #808b95;
+}
+.connected-subsection {
+  border-top: 1px solid #f0f2f3;
+}
+.leader-chip button {
+  color: #808e9c;
+}
+.connected-member-list,.membership-list {
+  border: 1px solid #eff1f3;
+}
+.connected-member,.membership-row {
+  border-bottom: 1px solid #f0f2f4;
+}
+.connected-member:hover {
+  background: #f8fafb;
+}
+.connected-member>svg {
+  color: #bfc6cc;
+}
+.connected-status {
+  background: #edf2f6;
+  color: #6c839b;
+}
+.connected-status.archived {
+  background: #f2f3f4;
+  color: #8b939a;
+}
+.connected-inline-note {
+  background: #f5f7f8;
+  color: #919aa3;
+}
+.membership-actions {
+  background: #f8f9fa;
+  border: 1px solid #eef0f2;
+}
+.membership-actions span {
+  color: #9ba3ab;
+}
+.membership-actions button {
+  border: 1px solid #e4e8eb;
+  color: #616f7e;
+}
+.membership-row input {
+  accent-color: #4d6680;
+}
+.course-workspace-head p {
+  color: #949da6;
+}
+.learning-block {
+  border-top: 1px solid #f1f3f4;
+}
+.learning-block>div {
+  color: #8a97a4;
+}
+.learning-block strong {
+  color: #495663;
+}
+.learning-block p {
+  color: #6d7680;
+}
+.reading-summary {
+  border: 1px solid #d7e0e9;
+  background: #f4f7fa;
+}
+.reading-summary>div {
+  color: #415161;
+}
+.reading-summary progress {
+  accent-color: #4c739b;
+}
+.reading-summary small,.assignment-progress small {
+  color: #818b94;
+}
+.read-toggle {
+  color: #324d69;
+}
+.read-toggle input {
+  accent-color: #40678e;
+}
+.assignment-progress {
+  border-bottom: 1px solid #eef1f3;
+}
+.my-group-card p {
+  color: #717b86;
+}
+.builder-check {
+  color: #405367;
+}
+.builder-check input {
+  accent-color: #40678e;
+}
+.block-required {
+  color: #758494;
+  background: #edf2f6;
+}
+.assessment-editor-item,.assessment-question,.attempt-entry {
+  border: 1px solid #dfe5eb;
+}
+.assessment-label {
+  color: #485766;
+}
+.assessment-option-editor>input,.assessment-question textarea {
+  border: 1px solid #d6dde4;
+}
+.answer-option input {
+  accent-color: #40678e;
+}
+.assessment-question small,.attempt-entry small {
+  color: #737f8b;
+}
+.review-entry p {
+  color: #717d8a;
+}
+.review-entry small {
+  color: #848f9a;
+}
+.completion-status p {
+  color: #717d8a;
+}
+.completion-status progress {
+  accent-color: #4d7297;
+}
+.completion-badge {
+  background: #edf1f4;
+  color: #637281;
+}
+.completion-badge.completed {
+  background: #e1ebf4;
+  color: #37597c;
+}
+.completion-badge.inactive {
+  background: #f2f3f4;
+  color: #848b91;
+}
+.completion-history {
+  color: #717d8a;
+}
+.dashboard-metrics strong {
+  color: #4a647f;
+}
+.dashboard-metrics span,.dashboard-row small {
+  color: #828e99;
+}
+.dashboard-person {
+  color: #4b6580;
+}
+.dashboard-row p {
+  color: #6f7b87;
+}
+.group-tree ul {
+  border-left: 1px solid #d9e0e7;
+}
+.group-tree-toggle {
+  color: #6b7988;
+}
+.group-tree-toggle:hover {
+  background: #eff3f6;
+}
+.certificate-stage {
+  border: 1px solid #d8dfe6;
+}
+.certificate-field {
+  outline: 1px dashed #486786;
+  color: #141c24;
+}
+.certificate-field.selected {
+  outline: 2px solid #3c658e;
+}
+.certificate-row p {
+  color: #606a74;
+}
+.certificate-row small {
+  color: #606a74;
+}
+
+/* Primary blue accents; error and warning colours remain distinct. */
+.brand-mark, .button.primary { background: #225b9c; }
+.button.primary { box-shadow: 0 3px 7px #225b9c1a; }
+.button.primary:hover { background: #194a82; }
+.connected-tabs button.selected { color: #225b9c; border-color: #347ac2; }
+.nav-item.active { color: #225b9c; background: #e6f0fb; }
+.group-choice-icon { background: #e4effa; color: #4c79a7; }
+.connected-group-item:hover, .connected-group-item.selected { background: #edf5fd; }
+.group-tree-toggle { color: #4c79a7; }
+.progress span { background: #5b92c7; }
+.connected-group-item small,.connected-member small,.membership-row small { color: #5d7288; }
