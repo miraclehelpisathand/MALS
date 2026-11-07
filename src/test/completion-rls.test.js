@@ -1,6 +1,7 @@
 import { PGlite } from '@electric-sql/pglite';
 import { readFile } from 'node:fs/promises';
 import { beforeAll, afterAll, describe, expect, it } from 'vitest';
+import { makeReportSheets } from '../reportWorkbook.js';
 const id={admin:'00000000-0000-4000-8000-000000000001',leader:'00000000-0000-4000-8000-000000000002',trainer:'00000000-0000-4000-8000-000000000003',trainee:'00000000-0000-4000-8000-000000000004',other:'00000000-0000-4000-8000-000000000005',group:'10000000-0000-4000-8000-000000000001'};
 let db,course,module,t1,t2,optional,qblock,pblock,assignment,practicalAttempt;
 async function as(user){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[user]);await db.exec('set role authenticated')}
@@ -18,5 +19,26 @@ describe('completion and dashboard security',()=>{
  it('exposes summary but not assessment answers to a leader, isolates other trainees and blocks direct writes',async()=>{await as(id.leader);expect((await progress()).status).toBe('completed');expect((await db.query('select * from public.assessment_attempts')).rows).toHaveLength(0);await expect(db.query("insert into public.course_completion_events(assignment_id,event_type) values($1,'completed')",[assignment])).rejects.toThrow();await expect(db.query('select * from public.course_completion_state')).rejects.toThrow();await as(id.other);expect((await db.query('select * from public.list_assignment_progress()')).rows).toHaveLength(0);expect((await db.query('select * from public.course_completion_events')).rows).toHaveLength(0);await db.exec('reset role; set role anon');await expect(db.query('select * from public.list_assignment_progress()')).rejects.toThrow();});
  it('uses Pacific/Auckland end-of-day across daylight saving changes',async()=>{await db.exec('reset role');const {rows}=await db.query("select ('2027-04-04'::date+1)::timestamp at time zone 'Pacific/Auckland' as autumn, ('2027-09-26'::date+1)::timestamp at time zone 'Pacific/Auckland' as spring");expect(new Date(rows[0].autumn).toISOString()).toBe('2027-04-04T12:00:00.000Z');expect(new Date(rows[0].spring).toISOString()).toBe('2027-09-26T11:00:00.000Z');});
  it('preserves completion history but hides group-only assignments when membership is archived',async()=>{await as(id.admin);const c=await rpc('create_course','Group course','');const m=await rpc('add_course_module',c,'Module');const b=await rpc('add_draft_block',m,'Text','',true);await rpc('publish_course',c);await rpc('assign_course_group',c,id.group,'2027-03-01');await as(id.trainee);await rpc('set_text_block_read',b,true);expect((await db.query('select status from public.list_assignment_progress() where course_id=$1',[c])).rows[0].status).toBe('completed');await as(id.admin);await rpc('manage_group_membership',id.group,id.trainee,'archive',{});await as(id.trainee);expect((await db.query('select * from public.list_assignment_progress() where course_id=$1',[c])).rows).toHaveLength(0);expect((await db.query('select e.id from public.course_completion_events e join public.course_assignments a on a.id=e.assignment_id where a.course_id=$1',[c])).rows).toHaveLength(0);await as(id.admin);expect((await db.query('select status,active from public.list_assignment_progress() where course_id=$1',[c])).rows[0]).toMatchObject({status:'completed',active:false});await rpc('manage_group_membership',id.group,id.trainee,'restore',{[c]:'2027-04-01'});await as(id.trainee);expect((await db.query('select status,target_date::text from public.list_assignment_progress() where course_id=$1',[c])).rows[0]).toEqual({status:'completed',target_date:'2027-03-01'});});
+
+ it('uses the RLS-scoped progress and history for manager workbooks',async()=>{
+  await as(id.admin);
+  const otherCourse=await rpc('create_course','Other trainee course','');
+  const otherModule=await rpc('add_course_module',otherCourse,'Module');
+  const otherBlock=await rpc('add_draft_block',otherModule,'Read','',true);
+  await rpc('publish_course',otherCourse);await rpc('assign_course_individual',otherCourse,id.other,'2027-01-01');
+  await as(id.other);await rpc('set_text_block_read',otherBlock,true);
+  async function reportData(userId,isAdmin){
+   const fetch=async sql=>(await db.query(sql)).rows;
+   return {userId,isAdmin,profiles:await fetch('select id,display_name from public.profiles'),courses:await fetch('select id,title,version_number from public.courses'),groups:await fetch('select id,name from public.groups'),leaders:await fetch('select group_id,user_id from public.group_leaders'),memberships:await fetch('select group_id,user_id,status from public.group_memberships'),completion:await fetch('select * from public.list_assignment_progress()'),completionEvents:await fetch('select assignment_id,event_type,occurred_at,source from public.course_completion_events')};
+  }
+  await as(id.leader);const leaderData=await reportData(id.leader,false);
+  expect(leaderData.completion.some(p=>p.user_id===id.other)).toBe(false);
+  const leaderWorkbook=makeReportSheets(leaderData);
+  expect(leaderWorkbook[0].data.slice(1).some(r=>r[2]==='Other trainee course')).toBe(false);
+  expect(leaderWorkbook[1].data.slice(1).some(r=>r[2]==='Other trainee course')).toBe(false);
+  await as(id.admin);const adminWorkbook=makeReportSheets(await reportData(id.admin,true));
+  expect(adminWorkbook[0].data.slice(1).some(r=>r[2]==='Other trainee course')).toBe(true);
+  expect(adminWorkbook[1].data.slice(1).some(r=>r[2]==='Other trainee course')).toBe(true);
+ });
 
 });

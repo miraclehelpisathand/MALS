@@ -105,3 +105,31 @@ async function readCompletion(client) {
     if(page.length<500)return rows;
   }
 }
+
+// Read report inputs afresh under the current session, never with a privileged
+// key. Each request is independently protected by RLS; this is not a single
+// transactional snapshot across pages. Fail closed if the session or manager
+// role has changed before or during the read.
+export async function loadReportData(client, expectedUserId) {
+  async function requireManager() {
+    const data = await checked(client.auth.getUser());
+    if (!data?.user?.id || data.user.id !== expectedUserId) throw Error('Your session has changed. Sign in again.');
+    const roles = await checked(client.from('user_roles').select('role').eq('user_id', expectedUserId));
+    const isAdmin = roles.some(r=>r.role==='administrator');
+    if (!isAdmin && !roles.some(r=>r.role==='leader')) throw Error('Only administrators and group leaders can export this report.');
+    return { isAdmin };
+  }
+  const initialRole = await requireManager();
+  const [profiles,courses,groups,leaders,memberships,completion,completionEvents] = await Promise.all([
+    readAll(client,'profiles','id,display_name',['display_name','id']),
+    readAll(client,'courses','id,title,version_number',['title','id']),
+    readAll(client,'groups','id,name',['name','id']),
+    readAll(client,'group_leaders','group_id,user_id',['group_id','user_id']),
+    readAll(client,'group_memberships','group_id,user_id,status',['group_id','user_id']),
+    readCompletion(client),
+    readAll(client,'course_completion_events','id,event_sequence,assignment_id,event_type,occurred_at,source',['event_sequence']),
+  ]);
+  const {isAdmin} = await requireManager();
+  if (isAdmin !== initialRole.isAdmin) throw Error('Your permissions have changed. Refresh and try again.');
+  return {userId:expectedUserId,isAdmin,profiles,courses,groups,leaders,memberships,completion,completionEvents};
+}

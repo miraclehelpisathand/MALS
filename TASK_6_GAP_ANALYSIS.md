@@ -21,7 +21,7 @@ The demo in `src/App.jsx` is separate browser-local sample data; its sample vide
 | Completion and progress | `src/Completion.jsx`, `src/progress.js`, migrations 009–010, `TASK_4_VALIDATION.md` | Development implementation for required-block completion, history, overdue/late and scoped overview filters, with Pacific/Auckland end-of-date rules. Real signed-in security and phone checks remain. |
 | Certificates and refreshers | `src/CertificateEditor.jsx`, `src/Certificates.jsx`, migrations 011–014, `TASK_5_IN_PROGRESS.md` | **Local prototype only**, disabled and not deployed. Automatic refreshers and independent monitoring are not active. |
 
-The latest recorded local full suite passed 156 tests and the build passed with a large-chunk warning. Database emulation, simulated identities and browser mocks do not replace signed-in Supabase HTTP tests, independent security review or physical-device testing. The latest development preflight is recorded in `TASK_5_IN_PROGRESS.md`; it is not a live guarantee.
+The latest recorded local full suite passed 167 tests and the build passed with a large-chunk warning. Database emulation, simulated identities and browser mocks do not replace signed-in Supabase HTTP tests, independent security review or physical-device testing. The latest development preflight is recorded in `TASK_5_IN_PROGRESS.md`; it is not a live guarantee.
 
 ## First-release gaps and suggested work packages
 
@@ -39,7 +39,7 @@ Work required:
 
 ### 7. Reporting and CSV — missing/partial
 
-The connected overview has active-assignment counts and group, course and status filters (`src/Completion.jsx`). CSV export is not implemented. The assessment review queue now has course-version and status filters over the records already authorised by the database; actual signed-in and physical-device checks remain. Confirm exactly which roles and fields may be exported, and whether inactive/historical records and certificates should be included. Implement and test export against server-authorised scope, pagination and spreadsheet formula injection; an unrelated leader must not receive another group's data. Certificate reporting must not assume undeployed Task 5 tables.
+The connected overview has active-assignment counts and group, course and status filters (`src/Completion.jsx`). The assessment queue now has course-version and status filters. The user chose a single two-sheet Excel workbook instead of CSV: administrators can export organisation-wide and group leaders within their existing authorised scope; the overview filters apply, and inactive assignments and completion/reopening history are included by default. The export reads data afresh under the session and RLS, verifies the manager role and paginates, then generates the workbook locally. The group filter uses current active memberships (not historical affiliation), and the status filter uses the current assignment state. The export includes neither assessment answers nor certificate details. It is not an atomic database snapshot: simultaneous access/data changes between requests can affect results. Local tests cover scope filtering, role/session failure, pagination, historical date labels, formula-like text and simulated-role PostgreSQL isolation. A real-browser workbook download was not verified in this sandbox because Chromium lacked NSS libraries; the workbook was generated and inspected in a Node test. Real signed-in cross-group API/download, physical-device and independent security testing remain; no production-readiness claim is made.
 
 ### 8. Course content and authoring improvements — missing/decision
 
@@ -76,3 +76,7 @@ Treat **work package 6: secure learning materials** as the proposed next feature
 ## Work started outside Task 6
 
 The trainer assessment review queue now offers course-version and status filters, a matching-record count and a clear empty result. The filters narrow existing database-authorised rows and do not change who may view or review an assessment. Local UI coverage includes combined filters, distinct versions, exclusion of the current user and removal of stale course selections after refresh. Task 6 and the deferred Task 5 backup/deployment remain on hold.
+
+## Reporting decisions
+
+The user selected administrator and scoped group-leader export, including inactive assignments and completion history, with the current overview filters. They requested one file with two tabs; the implementation uses `.xlsx` because CSV cannot contain multiple sheets. No automatic Task 5 scheduler, certificate deployment or Task 6 provider delivery was enabled.
